@@ -1174,13 +1174,13 @@ async def cb_manual_parse(call: CallbackQuery, state: FSMContext) -> None:
         inline_keyboard=[[InlineKeyboardButton(text="Готово", callback_data="finish_forward")]]
     )
     await call.message.answer(
-        "📝 **Режим ручного парсинга**\n\n"
+        mdv2("📝 **Режим ручного парсинга**\n\n"
         "Перешлите сюда последние посты из исходных каналов\n\n"
         "**Что делает бот:**\n"
         "• 📸 Извлекает фото и видео\n"
         "• 🤖 Обрабатывает текст через AI\n"
         "• 📤 Отправляет на публикацию/утверждение\n\n"
-        "Когда закончите, нажмите кнопку 'Готово' 👇",
+        "Когда закончите, нажмите кнопку 'Готово' 👇"),
         reply_markup=kb,
         parse_mode="MarkdownV2"
     )
@@ -1605,9 +1605,10 @@ async def cb_userbot_channels(call: CallbackQuery, bot: Bot) -> None:
     """Показывает меню управления каналами UserBot"""
     await call.answer()
     await call.message.edit_text(
-        "📡 Управление каналами UserBot\n\n"
-        "Здесь вы можете управлять каналами, которые UserBot будет мониторить автоматически.",
-        reply_markup=build_userbot_channels_menu()
+        mdv2("📡 **Управление каналами UserBot**\n\n"
+        "Здесь вы можете управлять каналами, которые UserBot будет мониторить автоматически\\."),
+        reply_markup=build_userbot_channels_menu(),
+        parse_mode="MarkdownV2"
     )
 
 @router.callback_query(F.data == "userbot_add_channel")
@@ -1619,13 +1620,13 @@ async def cb_userbot_add_channel(call: CallbackQuery, state: FSMContext, bot: Bo
     await state.set_state(AdminStates.waiting_userbot_channel)
     
     await call.message.edit_text(
-        "🤖 **Добавление канала в UserBot**\n\n"
+        mdv2("🤖 **Добавление канала в UserBot**\n\n"
         "Отправьте username канала или его ID\n\n"
         "**Примеры:**\n"
         "• `@channel\\_name` \\(username канала\\)\n"
         "• `\\-1001234567890` \\(ID канала\\)\n\n"
         "💡 **UserBot** может мониторить каналы, где обычный бот не может быть участником\n\n"
-        "UserBot автоматически начнет мониторить этот канал и пересылать все новые посты.",
+        "UserBot автоматически начнет мониторить этот канал и пересылать все новые посты."),
         reply_markup=InlineKeyboardBuilder().button(text="❌ Отмена", callback_data="userbot_channels").as_markup(),
         parse_mode="MarkdownV2"
     )
@@ -1640,8 +1641,8 @@ async def cb_userbot_remove_channel(call: CallbackQuery, bot: Bot) -> None:
     
     if not channels:
         await call.message.edit_text(
-            "📋 **Список каналов UserBot пуст**\n\n"
-            "Сначала добавьте каналы для мониторинга.",
+            mdv2("📋 **Список каналов UserBot пуст**\n\n"
+            "Сначала добавьте каналы для мониторинга."),
             reply_markup=build_userbot_channels_menu(),
             parse_mode="MarkdownV2"
         )
@@ -1661,8 +1662,8 @@ async def cb_userbot_remove_channel(call: CallbackQuery, bot: Bot) -> None:
     kb.adjust(1)
     
     await call.message.edit_text(
-        "➖ **Удаление канала из UserBot**\n\n"
-        "Выберите канал, который хотите убрать из мониторинга:",
+        mdv2("➖ **Удаление канала из UserBot**\n\n"
+        "Выберите канал, который хотите убрать из мониторинга:"),
         reply_markup=kb.as_markup(),
         parse_mode="MarkdownV2"
     )
@@ -1681,14 +1682,14 @@ async def cb_userbot_delete_channel(call: CallbackQuery, bot: Bot) -> None:
         await save_userbot_settings(settings)
         
         await call.message.edit_text(
-            f"✅ **Канал {channel_id} удален из UserBot**\n\n"
-            "UserBot больше не будет мониторить этот канал.",
+            mdv2(f"✅ **Канал {channel_id} удален из UserBot**\n\n"
+            "UserBot больше не будет мониторить этот канал."),
             reply_markup=build_userbot_channels_menu(),
             parse_mode="MarkdownV2"
         )
     else:
         await call.message.edit_text(
-            f"❌ **Канал {channel_id} не найден в списке мониторинга.**",
+            mdv2(f"❌ **Канал {channel_id} не найден в списке мониторинга.**"),
             reply_markup=build_userbot_channels_menu(),
             parse_mode="MarkdownV2"
         )
@@ -1808,24 +1809,26 @@ async def on_userbot_channel_input(message: Message, bot: Bot, state: FSMContext
     # Разрешаем канал
     channel_id = await resolve_channel_id(channel_input, bot)
     if not channel_id:
-        await message.answer(
-            "❌ Не удалось разрешить канал.\n\n"
-                    "Проверьте формат:\n"
-        "• @channel\\_name \\- username канала\n"
-        "• \\-1001234567890 \\- ID канала",
-            reply_markup=build_userbot_channels_menu()
-        )
+            await message.answer(
+        mdv2("❌ **Не удалось разрешить канал**\n\n"
+        "Проверьте формат:\n"
+        "• `@channel\\_name` \\(username канала\\)\n"
+        "• `\\-1001234567890` \\(ID канала\\)"),
+        reply_markup=build_userbot_channels_menu(),
+        parse_mode="MarkdownV2"
+    )
         await state.clear()
         return
     
     # Проверяем, не добавлен ли уже
     settings = await get_userbot_settings()
     if channel_id in settings.get("source_channels", []):
-        await message.answer(
-            f"ℹ️ Канал уже добавлен в UserBot.\n\n"
-            f"ID: {channel_id}",
-            reply_markup=build_userbot_channels_menu()
-        )
+            await message.answer(
+        mdv2(f"ℹ️ **Канал уже добавлен в UserBot**\n\n"
+        f"ID: `{channel_id}`"),
+        reply_markup=build_userbot_channels_menu(),
+        parse_mode="MarkdownV2"
+    )
         await state.clear()
         return
     
@@ -1845,11 +1848,12 @@ async def on_userbot_channel_input(message: Message, bot: Bot, state: FSMContext
         channel_info = f"ID: {channel_id}"
     
     await message.answer(
-        f"✅ Канал добавлен в UserBot!\n\n"
-        f"📡 Канал: {channel_info}\n"
-        f"🆔 ID: {channel_id}\n\n"
-        f"UserBot автоматически начнет мониторить этот канал и пересылать все новые посты.",
-        reply_markup=build_userbot_channels_menu()
+        mdv2(f"✅ **Канал добавлен в UserBot\\!**\n\n"
+        f"📡 **Канал:** {channel_info}\n"
+        f"🆔 **ID:** `{channel_id}`\n\n"
+        f"UserBot автоматически начнет мониторить этот канал и пересылать все новые посты\\."),
+        reply_markup=build_userbot_channels_menu(),
+        parse_mode="MarkdownV2"
     )
     
     await state.clear()
@@ -1880,11 +1884,12 @@ async def on_userbot_bot_chat_input(message: Message, bot: Bot, state: FSMContex
         chat_name = chat.title or chat.username or f"ID: {bot_chat_id}"
         
         await message.answer(
-            f"✅ Чат бота установлен для UserBot!\n\n"
-            f"🤖 Чат: {chat_name}\n"
-            f"🆔 ID: {bot_chat_id}\n\n"
-            f"Теперь UserBot будет пересылать все посты из мониторимых каналов в этот чат.",
-            reply_markup=build_userbot_settings_menu()
+            mdv2(f"✅ **Чат бота установлен для UserBot\\!**\n\n"
+            f"🤖 **Чат:** {chat_name}\n"
+            f"🆔 **ID:** `{bot_chat_id}`\n\n"
+            f"Теперь UserBot будет пересылать все посты из мониторимых каналов в этот чат\\."),
+            reply_markup=build_userbot_settings_menu(),
+            parse_mode="MarkdownV2"
         )
         
     except Exception as e:
