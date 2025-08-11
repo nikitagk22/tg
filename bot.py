@@ -1809,26 +1809,26 @@ async def on_userbot_channel_input(message: Message, bot: Bot, state: FSMContext
     # Разрешаем канал
     channel_id = await resolve_channel_id(channel_input, bot)
     if not channel_id:
-            await message.answer(
-        mdv2("❌ **Не удалось разрешить канал**\n\n"
-        "Проверьте формат:\n"
-        "• `@channel\\_name` \\(username канала\\)\n"
-        "• `\\-1001234567890` \\(ID канала\\)"),
-        reply_markup=build_userbot_channels_menu(),
-        parse_mode="MarkdownV2"
-    )
+        await message.answer(
+            mdv2("❌ **Не удалось разрешить канал**\n\n"
+            "Проверьте формат:\n"
+            "• `@channel\\_name` \\(username канала\\)\n"
+            "• `\\-1001234567890` \\(ID канала\\)"),
+            reply_markup=build_userbot_channels_menu(),
+            parse_mode="MarkdownV2"
+        )
         await state.clear()
         return
     
     # Проверяем, не добавлен ли уже
     settings = await get_userbot_settings()
     if channel_id in settings.get("source_channels", []):
-            await message.answer(
-        mdv2(f"ℹ️ **Канал уже добавлен в UserBot**\n\n"
-        f"ID: `{channel_id}`"),
-        reply_markup=build_userbot_channels_menu(),
-        parse_mode="MarkdownV2"
-    )
+        await message.answer(
+            mdv2(f"ℹ️ **Канал уже добавлен в UserBot**\n\n"
+            f"ID: `{channel_id}`"),
+            reply_markup=build_userbot_channels_menu(),
+            parse_mode="MarkdownV2"
+        )
         await state.clear()
         return
     
@@ -1895,9 +1895,9 @@ async def on_userbot_bot_chat_input(message: Message, bot: Bot, state: FSMContex
     except Exception as e:
         await message.answer(
             f"❌ Ошибка установки чата бота: {e}\n\n"
-                    "Проверьте формат:\n"
-        "• @your\\_bot \\- username бота\n"
-        "• 123456789 \\- ID чата",
+            "Проверьте формат:\n"
+            "• @your\\_bot \\- username бота\n"
+            "• 123456789 \\- ID чата",
             reply_markup=build_userbot_settings_menu()
         )
     
