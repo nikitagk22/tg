@@ -741,7 +741,7 @@ async def show_channels_overview(message: Message, bot: Bot) -> None:
         f"Цели ({len(targets)}): {', '.join(map(str, targets)) or '—'}\n\n"
         "Можно добавлять ID (например, -100123...) или @username — бот попробует разрешить в ID."
     )
-    await message.answer(text)
+    await message.answer(mdv2(text), parse_mode="MarkdownV2")
 
 
 async def resolve_chat_id(bot: Bot, raw: str) -> Optional[int]:
@@ -879,7 +879,7 @@ async def cb_stats(call: CallbackQuery) -> None:
         f"📥 **Источники:** {len(settings.get('WHITELIST_SOURCE_CHANNEL_IDS', []))} каналов\n"
         f"📤 **Целевые каналы:** {len(settings.get('WHITELIST_TARGET_CHANNEL_IDS', []))} каналов"
     )
-    await call.message.answer(text, parse_mode="MarkdownV2")
+    await call.message.answer(mdv2(text), parse_mode="MarkdownV2")
 
 
 @router.callback_query(F.data == "submenu_settings")
@@ -931,7 +931,7 @@ async def cb_show_sources(call: CallbackQuery) -> None:
     else:
         text = "📥 **Источники новостей:**\nНет добавленных источников"
     
-    await call.message.answer(text, parse_mode="MarkdownV2")
+    await call.message.answer(mdv2(text), parse_mode="MarkdownV2")
     await call.message.edit_reply_markup(reply_markup=build_sources_menu())
 
 
@@ -947,7 +947,7 @@ async def cb_show_targets(call: CallbackQuery) -> None:
     else:
         text = "📤 **Целевые каналы:**\nНет добавленных целей"
     
-    await call.message.answer(text, parse_mode="MarkdownV2")
+    await call.message.answer(mdv2(text), parse_mode="MarkdownV2")
     await call.message.edit_reply_markup(reply_markup=build_targets_menu())
 
 
@@ -995,12 +995,12 @@ async def cb_add_source(call: CallbackQuery, state: FSMContext) -> None:
     await call.answer()
     await state.set_state(AdminStates.waiting_add_source)
     await call.message.answer(
-        "📥 **Добавление источника новостей**\n\n"
+        mdv2("📥 **Добавление источника новостей**\n\n"
         "Отправьте ID канала или @username\n\n"
         "**Примеры:**\n"
-        "• `-1001234567890` (ID канала)\n"
-        "• `@channel_name` (username канала)\n\n"
-        "⚠️ **Важно:** Бот должен быть добавлен в этот канал!",
+        "• `-1001234567890` \\(ID канала\\)\n"
+        "• `@channel\\_name` \\(username канала\\)\n\n"
+        "⚠️ **Важно:** Бот должен быть добавлен в этот канал\\!"),
         parse_mode="MarkdownV2"
     )
 
@@ -1010,9 +1010,9 @@ async def cb_remove_source(call: CallbackQuery, state: FSMContext) -> None:
     await call.answer()
     await state.set_state(AdminStates.waiting_remove_source)
     await call.message.answer(
-        "➖ **Удаление источника новостей**\n\n"
+        mdv2("➖ **Удаление источника новостей**\n\n"
         "Отправьте ID канала для удаления\n\n"
-        "**Пример:** `-1001234567890`",
+        "**Пример:** `-1001234567890`"),
         parse_mode="MarkdownV2"
     )
 
@@ -1022,12 +1022,12 @@ async def cb_add_target(call: CallbackQuery, state: FSMContext) -> None:
     await call.answer()
     await state.set_state(AdminStates.waiting_add_target)
     await call.message.answer(
-        "📤 **Добавление целевого канала**\n\n"
+        mdv2("📤 **Добавление целевого канала**\n\n"
         "Отправьте ID канала или @username\n\n"
         "**Примеры:**\n"
-        "• `-1001234567890` (ID канала)\n"
-        "• `@channel_name` (username канала)\n\n"
-        "⚠️ **Важно:** Бот должен быть администратором этого канала!",
+        "• `-1001234567890` \\(ID канала\\)\n"
+        "• `@channel\\_name` \\(username канала\\)\n\n"
+        "⚠️ **Важно:** Бот должен быть администратором этого канала\\!"),
         parse_mode="MarkdownV2"
     )
 
@@ -1037,9 +1037,9 @@ async def cb_remove_target(call: CallbackQuery, state: FSMContext) -> None:
     await call.answer()
     await state.set_state(AdminStates.waiting_remove_target)
     await call.message.answer(
-        "➖ **Удаление целевого канала**\n\n"
+        mdv2("➖ **Удаление целевого канала**\n\n"
         "Отправьте ID канала для удаления\n\n"
-        "**Пример:** `-1001234567890`",
+        "**Пример:** `-1001234567890`"),
         parse_mode="MarkdownV2"
     )
 
@@ -1051,13 +1051,13 @@ async def on_add_source(message: Message, bot: Bot, state: FSMContext) -> None:
     chat_id = await resolve_chat_id(bot, message.text or "")
     if chat_id is None:
         await message.answer(
-            "❌ **Ошибка определения канала**\n\n"
-            "Не удалось определить ID канала.\n\n"
+            mdv2("❌ **Ошибка определения канала**\n\n"
+            "Не удалось определить ID канала\\.\n\n"
             "**Проверьте:**\n"
             "• Правильность написания username\n"
             "• Существование канала\n"
             "• Доступность канала для бота\n\n"
-            "Попробуйте ещё раз.",
+            "Попробуйте ещё раз\\."),
             parse_mode="MarkdownV2"
         )
         return
@@ -1112,13 +1112,13 @@ async def on_add_target(message: Message, bot: Bot, state: FSMContext) -> None:
     chat_id = await resolve_chat_id(bot, message.text or "")
     if chat_id is None:
         await message.answer(
-            "❌ **Ошибка определения канала**\n\n"
-            "Не удалось определить ID канала.\n\n"
+            mdv2("❌ **Ошибка определения канала**\n\n"
+            "Не удалось определить ID канала\\.\n\n"
             "**Проверьте:**\n"
             "• Правильность написания username\n"
             "• Существование канала\n"
             "• Доступность канала для бота\n\n"
-            "Попробуйте ещё раз.",
+            "Попробуйте ещё раз\\."),
             parse_mode="MarkdownV2"
         )
         return
@@ -1703,8 +1703,8 @@ async def cb_userbot_list_channels(call: CallbackQuery, bot: Bot) -> None:
     
     if not channels:
         await call.message.edit_text(
-            "📋 **Список каналов UserBot пуст**\n\n"
-            "Добавьте каналы для автоматического мониторинга.",
+            mdv2("📋 **Список каналов UserBot пуст**\n\n"
+            "Добавьте каналы для автоматического мониторинга."),
             reply_markup=build_userbot_channels_menu(),
             parse_mode="MarkdownV2"
         )
@@ -1724,7 +1724,7 @@ async def cb_userbot_list_channels(call: CallbackQuery, bot: Bot) -> None:
     channels_text += f"\n**Всего каналов:** {len(channels)}"
     
     await call.message.edit_text(
-        channels_text,
+        mdv2(channels_text),
         reply_markup=build_userbot_channels_menu(),
         parse_mode="MarkdownV2"
     )
@@ -1735,8 +1735,8 @@ async def cb_userbot_settings(call: CallbackQuery, bot: Bot) -> None:
     await call.answer()
     
     await call.message.edit_text(
-        "🔧 **Настройки UserBot**\n\n"
-        "Управление параметрами автоматического мониторинга каналов.",
+        mdv2("🔧 **Настройки UserBot**\n\n"
+        "Управление параметрами автоматического мониторинга каналов."),
         reply_markup=build_userbot_settings_menu(),
         parse_mode="MarkdownV2"
     )
@@ -1750,12 +1750,12 @@ async def cb_userbot_set_bot(call: CallbackQuery, state: FSMContext, bot: Bot) -
     await state.set_state(AdminStates.waiting_userbot_bot_chat)
     
     await call.message.edit_text(
-        "🤖 **Установка чата бота для UserBot**\n\n"
+        mdv2("🤖 **Установка чата бота для UserBot**\n\n"
         "Отправьте username вашего бота или его ID\n\n"
         "**Примеры:**\n"
         "• `@your\\_bot` \\(username бота\\)\n"
         "• `123456789` \\(ID бота\\)\n\n"
-        "UserBot будет пересылать все посты из мониторимых каналов в этот чат.",
+        "UserBot будет пересылать все посты из мониторимых каналов в этот чат."),
         reply_markup=InlineKeyboardBuilder().button(text="❌ Отмена", callback_data="userbot_settings").as_markup(),
         parse_mode="MarkdownV2"
     )
@@ -1792,7 +1792,7 @@ async def cb_userbot_status(call: CallbackQuery, bot: Bot) -> None:
     status_text += "\n💡 **Для запуска UserBot используйте:** `python userbot\\.py`"
     
     await call.message.edit_text(
-        status_text,
+        mdv2(status_text),
         reply_markup=build_userbot_settings_menu(),
         parse_mode="MarkdownV2"
     )
