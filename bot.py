@@ -77,7 +77,7 @@ last_reset_date: date = date.today()
 
 
 # ---------- Utilities ----------
-MDV2_SPECIAL = r"_[]()~`>#+-=|{}.!*"  # include * at the end for safety
+MDV2_SPECIAL = "_[]()~`>#+-=|{}.!*"  # include * at the end for safety
 
 
 def escape_markdown_v2(text: str) -> str:
