@@ -765,11 +765,11 @@ async def send_admin_menu(message: Message) -> None:
     text = (
         "🤖 **Панель управления ботом**\n\n"
         f"✅ **Автоутверждение:** {'🟢 Включено' if settings.get('auto_approve', True) else '🔴 Отключено'}\n"
-        f"📥 **Источники:** {len(settings.get('WHITELIST_SOURCE_CHANNEL_IDS', []) )}\n"
+        f"📥 **Источники:** {len(settings.get('WHITELIST_SOURCE_CHANNEL_IDS', []))}\n"
         f"📤 **Целевые каналы:** {len(settings.get('WHITELIST_TARGET_CHANNEL_IDS', []))}\n\n"
         "Выберите нужный раздел в меню ниже 👇"
     )
-    await message.answer(mdv2(text), reply_markup=build_main_menu(), parse_mode="MarkdownV2")
+    await message.answer(text, reply_markup=build_main_menu(), parse_mode="MarkdownV2")
 
 
 # ---------- Handlers ----------
@@ -1066,8 +1066,8 @@ async def on_add_source(message: Message, bot: Bot, state: FSMContext) -> None:
         arr.append(chat_id)
         save_settings()
     await message.answer(
-        mdv2(f"✅ **Источник добавлен**\n\n"
-        f"Канал `{chat_id}` успешно добавлен в список источников новостей."),
+        f"✅ **Источник добавлен**\n\n"
+        f"Канал `{chat_id}` успешно добавлен в список источников новостей.",
         parse_mode="MarkdownV2"
     )
     await state.clear()
@@ -1081,9 +1081,9 @@ async def on_remove_source(message: Message, state: FSMContext) -> None:
         chat_id = int(message.text.strip())
     except Exception:
         await message.answer(
-            mdv2("❌ **Неверный формат ID**\n\n"
+            "❌ **Неверный формат ID**\n\n"
             "ID канала должен быть числом.\n\n"
-            "**Пример:** `-1001234567890`"),
+            "**Пример:** `-1001234567890`",
             parse_mode="MarkdownV2"
         )
         return
@@ -1092,14 +1092,14 @@ async def on_remove_source(message: Message, state: FSMContext) -> None:
         arr.remove(chat_id)
         save_settings()
         await message.answer(
-            mdv2(f"✅ **Источник удалён**\n\n"
-            f"Канал `{chat_id}` успешно удалён из списка источников."),
+            f"✅ **Источник удалён**\n\n"
+            f"Канал `{chat_id}` успешно удалён из списка источников.",
             parse_mode="MarkdownV2"
         )
     else:
         await message.answer(
-            mdv2("❌ **Источник не найден**\n\n"
-            f"Канал `{chat_id}` не найден в списке источников."),
+            "❌ **Источник не найден**\n\n"
+            f"Канал `{chat_id}` не найден в списке источников.",
             parse_mode="MarkdownV2"
         )
     await state.clear()
@@ -1127,10 +1127,10 @@ async def on_add_target(message: Message, bot: Bot, state: FSMContext) -> None:
         arr.append(chat_id)
         save_settings()
     await message.answer(
-        mdv2(f"✅ **Целевой канал добавлен**\n\n"
-        f"Канал `{chat_id}` успешно добавлен в список целей для публикации."),
+        f"✅ **Целевой канал добавлен**\n\n"
+        f"Канал `{chat_id}` успешно добавлен в список целей для публикации.",
         parse_mode="MarkdownV2"
-    )
+        )
     await state.clear()
 
 
@@ -1142,9 +1142,9 @@ async def on_remove_target(message: Message, state: FSMContext) -> None:
         chat_id = int(message.text.strip())
     except Exception:
         await message.answer(
-            mdv2("❌ **Неверный формат ID**\n\n"
+            "❌ **Неверный формат ID**\n\n"
             "ID канала должен быть числом.\n\n"
-            "**Пример:** `-1001234567890`"),
+            "**Пример:** `-1001234567890`",
             parse_mode="MarkdownV2"
         )
         return
@@ -1153,14 +1153,14 @@ async def on_remove_target(message: Message, state: FSMContext) -> None:
         arr.remove(chat_id)
         save_settings()
         await message.answer(
-            mdv2(f"✅ **Целевой канал удалён**\n\n"
-            f"Канал `{chat_id}` успешно удалён из списка целей."),
+            f"✅ **Целевой канал удалён**\n\n"
+            f"Канал `{chat_id}` успешно удалён из списка целей.",
             parse_mode="MarkdownV2"
         )
     else:
         await message.answer(
-            mdv2("❌ **Целевой канал не найден**\n\n"
-            f"Канал `{chat_id}` не найден в списке целей."),
+            "❌ **Целевой канал не найден**\n\n"
+            f"Канал `{chat_id}` не найден в списке целей.",
             parse_mode="MarkdownV2"
         )
     await state.clear()
@@ -1191,8 +1191,8 @@ async def cb_finish_forward(call: CallbackQuery, state: FSMContext) -> None:
     await call.answer("✅ Режим завершён", cache_time=1)
     await state.clear()
     await call.message.answer(
-        mdv2("✅ **Ручной парсинг завершён**\n\n"
-        "Все пересланные посты обработаны и добавлены в очередь на публикацию."),
+        "✅ **Ручной парсинг завершён**\n\n"
+        "Все пересланные посты обработаны и добавлены в очередь на публикацию.",
         parse_mode="MarkdownV2"
     )
 
@@ -1223,8 +1223,8 @@ async def on_forwarded_news(message: Message, bot: Bot) -> None:
 
     if source_chat_id is None:
         await message.answer(
-            mdv2("❌ **Ошибка обработки**\n\n"
-            "Это не пересланный пост канала. Перешлите пост из канала-источника."),
+            "❌ **Ошибка обработки**\n\n"
+            "Это не пересланный пост канала. Перешлите пост из канала-источника.",
             parse_mode="MarkdownV2"
         )
         return
@@ -1233,9 +1233,9 @@ async def on_forwarded_news(message: Message, bot: Bot) -> None:
     sources = settings.get("WHITELIST_SOURCE_CHANNEL_IDS", [])
     if sources and source_chat_id not in sources:
         await message.answer(
-            mdv2(f"❌ **Канал не в списке источников**\n\n"
+            f"❌ **Канал не в списке источников**\n\n"
             f"Канал `{source_chat_id}` не добавлен в список источников.\n"
-            f"Добавьте его в настройках каналов."),
+            f"Добавьте его в настройках каналов.",
             parse_mode="MarkdownV2"
         )
         return
@@ -1243,8 +1243,8 @@ async def on_forwarded_news(message: Message, bot: Bot) -> None:
     text = message.caption if message.caption else (message.text or "")
     if is_probable_ad(text):
         await message.answer(
-            mdv2("⚠️ **Рекламный пост обнаружен**\n\n"
-            "Пост похож на рекламу и будет пропущен."),
+            "⚠️ **Рекламный пост обнаружен**\n\n"
+            "Пост похож на рекламу и будет пропущен.",
             parse_mode="MarkdownV2"
         )
         return
